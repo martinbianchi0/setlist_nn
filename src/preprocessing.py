@@ -19,6 +19,9 @@ def get_setlists(artist, pages=10):
                 venue = s['venue']['name']
                 city = s['venue']['city']['name']
                 country = s['venue']['city']['country']['code']
+                coords = s['venue']['city'].get('coords', {})
+                lat = coords.get('lat', None)
+                long = coords.get('long', None)
                 tour = s.get('tour', {}).get('name', None)
                 songs = []
                 for set_block in s.get('sets', {}).get('set', []):
@@ -30,9 +33,18 @@ def get_setlists(artist, pages=10):
                         'venue': venue,
                         'city': city,
                         'country': country,
+                        'lat': lat,
+                        'long': long,
                         'tour': tour,
                         'songs': songs
                     })
             except Exception:
                 continue
     return pd.DataFrame(all_data)
+
+# HICE ESTO PARA GUARDAR LA INFO EN UN CSV Y Q SEA MAS FACIL DE VER
+if __name__ == "__main__":
+    artist = "The Rolling Stones" # Cambia por el artista que quieras
+    df = get_setlists(artist, pages=10)
+    df.to_csv(f"{artist}_setlists.csv", index=False)
+    print(f"Archivo {artist}_setlists.csv guardado correctamente.")
